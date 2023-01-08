@@ -1,41 +1,78 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+.App {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.Game {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+
+    /* Cool rounded border */
+    border-radius: 8px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    height: 1000px;
+    width: 80%;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.Upgrades {
+
+    /* Center the content */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    /* Cool rounded border */
+    border-left: 2px solid #eaeaea;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.Counter {
+    /* Center the content */
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
 }
 
-.card {
-  padding: 2em;
+.Counter__scorePerSecond {
+    /* Smaller font */
+    font-size: 0.8rem;
+    margin-left: 1em;
 }
 
-.read-the-docs {
-  color: #888;
+button {
+    /* Center the content */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    /* Cool rounded border */
+    border-radius: 8px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    height: 20px;
+    width: 80px;
+
+    cursor: pointer;
+
+    /* Cool hover effect */
+    transition: all 0.2s ease-in-out;
+}
+button:hover {
+    transform: scale(1.05);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
