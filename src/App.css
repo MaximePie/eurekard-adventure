@@ -25,11 +25,24 @@
     /* Center the content */
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
 
     /* Cool rounded border */
     border-left: 2px solid #eaeaea;
+}
+
+.Upgrades__tabs {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.selected {
+    border-bottom: 2px solid #eaeaea;
+
+    /* Add some padding to the bottom */
+    padding-bottom: 0.5rem;
 }
 
 .Counter {
@@ -68,6 +81,16 @@ button {
     /* Cool hover effect */
     transition: all 0.2s ease-in-out;
 }
+
+.Bonus {
+    /* On one line */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
 button:hover {
     transform: scale(1.05);
 }
