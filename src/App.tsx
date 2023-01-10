@@ -2,12 +2,14 @@ import React, {FormEvent, useContext, useEffect, useState} from 'react'
 import axios from "axios";
 import "./App.css"
 
+// Look in the LocalStorage for the token
 const axiosInstance = axios.create({
     baseURL: 'https://eurekard.cyclic.app/',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-    }
+        'auth-token': localStorage.getItem('token'),
+    },
 });
 
 function Header({onLogout}: { onLogout: () => void }) {
@@ -180,14 +182,55 @@ function Team() {
 
 }
 
+function Card ({card}: { card: any }) {
+  const [isFlipped, setIsFlipped] = useState(false);
+  const classnames = isFlipped ? "Card Card--flipped" : "Card";
+
+  return (
+    <div className={classnames} onClick={onFlip}>
+      <span className="Card__score">{card.currentDelay}</span>
+      <p className="Card__content">{isFlipped ? card.answer : card.question}</p>
+      {isFlipped && (
+        <div className="Card__actions">
+          <button className="Card__action" onClick={onSuccess}>✔️</button>
+          <button className="Card__action" onClick={onFailure}>❌</button>
+        </div>
+      )}
+    </div>
+  )
+
+  function onSuccess() {
+
+  }
+
+  function onFailure() {
+
+  }
+
+  // Flip the card once
+  function onFlip() {
+    if (!isFlipped) {
+      setIsFlipped(true);
+    }
+  }
+
+}
+
 function Counter() {
 
   // get score from context
   const {score, setScore, scorePerSecond} = useContext(GameContext);
+  const [cards, setCards] = useState([] as any[]);
 
   // Rounded to 2 decimals
   const formattedScore = Math.round(score * 100) / 100;
   const formattedScorePerSecond = Math.round(scorePerSecond * 100) / 100;
+
+
+  // Fetch cards from the API
+  useEffect(() => {
+    fetchCards();
+  }, []);
 
   return (
     <div className="Counter">
@@ -198,6 +241,11 @@ function Counter() {
         </span>
       </h3>
       <p>{formattedScore}</p>
+      <div className="Cards">
+        {cards.slice(0,10).map((card, index) => (
+          <Card card={card}/>
+        ))}
+      </div>
       <button onClick={fetchCards}>Fetch</button>
       <button onClick={() => setScore(score + 1)}>
         +1
@@ -214,7 +262,7 @@ function Counter() {
   function fetchCards() {
     axiosInstance.get('/userCards')
       .then(response => {
-        console.log(response.data);
+        setCards(response.data.cards);
       })
   }
 }
@@ -241,6 +289,7 @@ function BonusList() {
 
 function Game() {
   const [selectedPanel, setSelectedPanel] = useState<"team" | "bonus">("team");
+
   return (
     <GameProvider>
       <div className="Game">
@@ -298,6 +347,8 @@ function Login({onLogin}: { onLogin: () => void }) {
       axiosInstance.defaults.headers.common["auth-token"] = response.data.token;
       if (response.data.token) {
         onLogin();
+        // Save in local storage
+        localStorage.setItem("token", response.data.token);
       }
       else {
         console.error("No token");
@@ -307,7 +358,8 @@ function Login({onLogin}: { onLogin: () => void }) {
 }
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<"login" | "game">("login");
+  // If there is a token in local storage, use it
+  const [currentPage, setCurrentPage] = useState<"login" | "game">(localStorage.getItem("token") ? "game" : "login");
 
   return (
     <div className="App">
