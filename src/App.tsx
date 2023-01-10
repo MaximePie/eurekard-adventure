@@ -1,10 +1,22 @@
-import React, {useContext, useEffect, useState} from 'react'
+import React, {FormEvent, useContext, useEffect, useState} from 'react'
+import axios from "axios";
 import "./App.css"
 
-function Header() {
+const axiosInstance = axios.create({
+    baseURL: 'https://eurekard.cyclic.app/',
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    }
+});
+
+function Header({onLogout}: { onLogout: () => void }) {
   return (
-    <h1>
+    <h1 className="Header">
       Le meilleur site de React
+      <div className="Header__left">
+        <span className="Header__left-action" role="button" onClick={onLogout}>Se déconnecter</span>
+      </div>
     </h1>
   )
 }
@@ -51,17 +63,24 @@ function GameProvider(props: any) {
 
   const [bonusList, setBonusList] = useState([
     {
-      name: "Canard en plastique", cost: 10, effect: {
-        target: "André",
-        multiplier: 2,
-      },
+      name: "Canard en plastique",
+      cost: 10,
+      effect: {target: "André", multiplier: 2,},
       isBought: false,
-      isAvailable: true,
+      isAvailable: false,
+      unlockedAt: {name: "André", level: 10}
     },
-    {name: "Bureau marcheur", cost: 100, effect: {target: "Marine", multiplier: 2}, isAvailable: true, isBought: false},
+    {
+      name: "Bureau marcheur",
+      cost: 100,
+      effect: {target: "Marine", multiplier: 2},
+      isAvailable: false,
+      isBought: false,
+      unlockedAt: {name: "Marine", level: 10}
+    },
   ]);
 
-  const [scorePerSecond, setScorePerSecond] = useState(0.1);
+  const [scorePerSecond, setScorePerSecond] = useState(0);
 
   // Create an interval to update the score every second based on the scorePerSecond
   useEffect(() => {
@@ -76,6 +95,14 @@ function GameProvider(props: any) {
     let newScorePerSecond = 0;
     team.forEach(member => {
       const bonus = bonusList.find(bonus => bonus.effect.target === member.name);
+
+      // If the bonus is not available, and the member is at the right level, make it available
+      if (bonus && !bonus.isAvailable && member.level >= bonus.unlockedAt.level) {
+        bonus.isAvailable = true;
+        // Update the bonusList with the new bonus
+        setBonusList(bonusList => [...bonusList]);
+      }
+
       newScorePerSecond += member.scorePerSecond * member.level * (bonus?.isBought ? bonus.effect.multiplier : 1);
     });
 
@@ -171,6 +198,7 @@ function Counter() {
         </span>
       </h3>
       <p>{formattedScore}</p>
+      <button onClick={fetchCards}>Fetch</button>
       <button onClick={() => setScore(score + 1)}>
         +1
       </button>
@@ -182,6 +210,13 @@ function Counter() {
       </button>
     </div>
   )
+
+  function fetchCards() {
+    axiosInstance.get('/userCards')
+      .then(response => {
+        console.log(response.data);
+      })
+  }
 }
 
 function BonusList() {
@@ -192,7 +227,7 @@ function BonusList() {
   return (
     <div className="BonusList">
       <h3>Bonus</h3>
-      {bonusList.filter(({isAvailable}) => isAvailable).map((bonus, index) => (
+      {bonusList.filter(({isAvailable, isBought}) => isAvailable && !isBought).map((bonus, index) => (
         <div key={index} className="Bonus">
           <p>
             {bonus.name} ({bonus.cost} kn)
@@ -234,12 +269,51 @@ function Game() {
   )
 }
 
+function Login({onLogin}: { onLogin: () => void }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  return (
+    <div className="Login">
+      <h2>Connexion</h2>
+      <form onSubmit={onSubmit}>
+        <label>
+          Email
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)}/>
+        </label>
+        <label>
+          Mot de passe
+          <input type="password" value={password} onChange={e => setPassword(e.target.value)}/>
+        </label>
+        <button type="submit">Se connecter</button>
+      </form>
+    </div>
+  )
+
+  function onSubmit(event: FormEvent) {
+    event.preventDefault();
+    axiosInstance.post("/users/login", {
+      email,
+      password
+    }).then(response => {
+      axiosInstance.defaults.headers.common["auth-token"] = response.data.token;
+      if (response.data.token) {
+        onLogin();
+      }
+      else {
+        console.error("No token");
+      }
+    });
+  }
+}
+
 function App() {
+  const [currentPage, setCurrentPage] = useState<"login" | "game">("login");
 
   return (
     <div className="App">
-      <Header/>
-      <Game/>
+      <Header onLogout={() => setCurrentPage("login")}/>
+      {currentPage === "login" && <Login onLogin={() => setCurrentPage("game")}/>}
+      {currentPage === "game" && <Game/>}
     </div>
   )
 }

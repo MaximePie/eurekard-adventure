@@ -91,6 +91,22 @@ button {
     width: 100%;
 }
 
+.Header {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    padding: 1rem;
+}
+
+.Header__left {
+    font-size: 1rem;
+}
+
+.Header__left-action {
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
 button:hover {
     transform: scale(1.05);
 }
