@@ -192,3 +192,74 @@ button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+.Todolist {
+    /*
+    Fixed at the bottom left corner of the screen
+     */
+
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    margin: 1rem;
+    width: 240px;
+    height: 300px;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #eaeaea;
+
+    /* Content */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+
+    font-size: 0.8rem;
+}
+
+.Todolist--collapsed {
+    font-size: 10px;
+    height: 60px;
+    padding: 0;
+
+    /* Center the content */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.Todolist__button {
+    /* Display at the top right of the parent */
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0.5rem;
+    cursor: pointer;
+
+    /* shape */
+    width: 20px;
+    height: 20px;
+    padding: 0;
+}
+
+.Todolist__item--done {
+    text-decoration: line-through;
+    background-color: #eaeaea;
+}
+
+.Team__buyButtons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+}
+
+.Team {
+    padding: 1em;
+}
+
+.Todolist--collapsed__task {
+    margin: 0;
+}
